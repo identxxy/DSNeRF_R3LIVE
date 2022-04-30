@@ -1,3 +1,4 @@
+from email.mime import base
 import numpy as np
 import os, imageio
 from pathlib import Path
@@ -438,7 +439,22 @@ def load_sensor_depth(basedir, factor=8, bd_factor=.75):
     np.save(data_file, data_list)
     return data_list
 
-    
+
+def load_ros_depth(base_dir):
+
+    points_dir = os.path.join(Path(base_dir), 'ros/points')
+    data_file = Path(base_dir) / 'ros_depth.npy'
+    data_list = []
+
+    for f in os.listdir(points_dir):
+        pts_uvd = np.load(os.path.join(points_dir, f)) # N x 3
+        pts_uv = pts_uvd[:, :2]
+        pts_depth = pts_uvd[:, 2]
+        pts_uniform_w = np.ones_like(pts_depth)
+        data_list.append({"depth":pts_depth, "coord":pts_uv, "weight": pts_uniform_w})
+
+    np.save(data_file, data_list)
+    return data_list
 
     
 

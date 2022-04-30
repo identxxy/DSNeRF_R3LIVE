@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 
 from run_nerf_helpers import *
 
-from load_llff import load_llff_data, load_colmap_depth
+from load_llff import load_llff_data, load_colmap_depth, load_ros_depth
 from load_dtu import load_dtu_data
 
 from loss import SigmaLoss
@@ -620,6 +620,9 @@ def config_parser():
                     help="normalize depth before calculating loss")
     parser.add_argument("--depth_rays_prop", type=float, default=0.5,
                         help="Proportion of depth rays.")
+
+    parser.add_argument("--ros_depth", action='store_true',
+                        help="Use ros bag depth data.")
     return parser
 
 
@@ -632,6 +635,8 @@ def train():
     if args.dataset_type == 'llff':
         if args.colmap_depth:
             depth_gts = load_colmap_depth(args.datadir, factor=args.factor, bd_factor=.75)
+        elif args.ros_depth:
+            depth_gts = load_ros_depth(args.datadir)
         images, poses, bds, render_poses, i_test = load_llff_data(args.datadir, args.factor,
                                                                   recenter=True, bd_factor=.75,
                                                                   spherify=args.spherify)
@@ -783,7 +788,7 @@ def train():
             return
 
     # Prepare raybatch tensor if batching random rays
-    if not args.colmap_depth:
+    if not (args.colmap_depth or args.ros_depth):
         N_rgb = args.N_rand
     else:
         N_depth = int(args.N_rand * args.depth_rays_prop)
@@ -807,7 +812,7 @@ def train():
         np.random.shuffle(rays_rgb)
 
         rays_depth = None
-        if args.colmap_depth:
+        if args.colmap_depth or args.ros_depth:
             print('get depth rays')
             rays_depth_list = []
             for i in i_train:
@@ -870,7 +875,7 @@ def train():
             batch = torch.transpose(batch, 0, 1)
             batch_rays, target_s = batch[:2], batch[2]
 
-            if args.colmap_depth:
+            if args.colmap_depth or args.ros_depth:
                 # batch_depth = rays_depth[i_batch:i_batch+N_rand]
                 try:
                     batch_depth = next(raysDepth_iter).to(device)
@@ -926,7 +931,7 @@ def train():
         #####  Core optimization loop  #####
         # timer_0 = time.perf_counter()
 
-        if args.colmap_depth:
+        if args.colmap_depth or args.ros_depth:
             N_batch = batch_rays.shape[1]
             batch_rays = torch.cat([batch_rays, batch_rays_depth], 1) # (2, 2 * N_rand, 3)
 
@@ -938,7 +943,7 @@ def train():
                                                 **render_kwargs_train)
         # timer_iter = time.perf_counter()
 
-        if args.colmap_depth and not args.depth_with_rgb:
+        if args.colmap_depth or args.ros_depth and not args.depth_with_rgb:
             # _, _, _, depth_col, extras_col = render(H, W, focal, chunk=args.chunk, rays=batch_rays_depth,
             #                                     verbose=i < 10, retraw=True, depths=target_depth,
             #                                     **render_kwargs_train)
@@ -949,7 +954,7 @@ def train():
             extras = {x:extras[x][:N_batch] for x in extras}
             # extras_col = extras[N_rand:, :]
 
-        elif args.colmap_depth and args.depth_with_rgb:
+        elif args.colmap_depth or args.ros_depth and args.depth_with_rgb:
             depth_col = depth
 
         # timer_split = time.perf_counter()
