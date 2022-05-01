@@ -441,7 +441,7 @@ def load_sensor_depth(basedir, factor=8, bd_factor=.75):
     return data_list
 
 
-def load_ros_depth(base_dir):
+def load_ros_depth(base_dir, factor=8):
 
     points_dir = os.path.join(Path(base_dir), 'ros/points')
     data_file = Path(base_dir) / 'ros_depth.npy'
@@ -451,7 +451,7 @@ def load_ros_depth(base_dir):
     filenames.sort()
     for f in filenames:
         pts_uvd = np.load(os.path.join(points_dir, f)) # N x 3
-        pts_uv = pts_uvd[:, :2]
+        pts_uv = pts_uvd[:, :2] / factor
         pts_depth = pts_uvd[:, 2]
         pts_uniform_w = np.ones_like(pts_depth)
         data_list.append({"depth":pts_depth, "coord":pts_uv, "weight": pts_uniform_w})

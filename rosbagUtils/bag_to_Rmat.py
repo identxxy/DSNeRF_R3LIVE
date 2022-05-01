@@ -46,7 +46,7 @@ def main():
         t = np.array([pos.x, pos.y, pos.z]).reshape(3,1)
 
         mat = np.concatenate([R, t], axis=1)
-        np.save(args.output_dir+f"/{count: 05d}", mat)
+        np.save(args.output_dir+f"/{count:05d}", mat)
         print(f"Save Odometry {count}")
 
         count += 1

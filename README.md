@@ -48,7 +48,3 @@ In `config/<config_file>`, be sure to set `ros_depth=True`, then run
 ```
 python run_nerf.py --config config/<config_file>
 ```
-
-## Limitation
-
-No resolution zoom in feature for rosbag, which means the `factory` parameter currently not working.
