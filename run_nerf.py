@@ -636,7 +636,7 @@ def train():
         if args.colmap_depth:
             depth_gts = load_colmap_depth(args.datadir, factor=args.factor, bd_factor=.75)
         elif args.ros_depth:
-            depth_gts = load_ros_depth(args.datadir)
+            depth_gts = load_ros_depth(args.datadir, factor=args.factor)
         images, poses, bds, render_poses, i_test = load_llff_data(args.datadir, args.factor,
                                                                   recenter=True, bd_factor=.75,
                                                                   spherify=args.spherify)
