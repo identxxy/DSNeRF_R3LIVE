@@ -16,14 +16,13 @@ chunk = 8192
 netchunk = 16384
 netdepth = 4
 
-i_testset = 1000
-i_video = 10000
-N_iters = 20000
+i_testset = 10000
+i_video = 100000
+N_iters = 100000
 
 train_scene = [0, 1]
 test_scene = [-1]
 no_ndc = True
-colmap_depth = False
 ros_depth = True
 depth_loss = True
 depth_lambda = 0.1

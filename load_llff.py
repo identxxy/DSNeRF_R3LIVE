@@ -1,4 +1,5 @@
 from email.mime import base
+from isort import file
 import numpy as np
 import os, imageio
 from pathlib import Path
@@ -446,7 +447,9 @@ def load_ros_depth(base_dir):
     data_file = Path(base_dir) / 'ros_depth.npy'
     data_list = []
 
-    for f in os.listdir(points_dir):
+    filenames = os.listdir(points_dir)
+    filenames.sort()
+    for f in filenames:
         pts_uvd = np.load(os.path.join(points_dir, f)) # N x 3
         pts_uv = pts_uvd[:, :2]
         pts_depth = pts_uvd[:, 2]
