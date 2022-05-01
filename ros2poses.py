@@ -33,7 +33,7 @@ def load_ros_data(base_dir):
     c2w_list = []
     poses_files = os.listdir(poses_dir)
     poses_files.sort()
-    for f in os.listdir(poses_files):
+    for f in poses_files:
         pose = np.load(os.path.join(poses_dir, f))
         c2w_list.append(mat_ros2colmap @ pose)
     c2w_mats = np.stack(c2w_list)  # N x 3 x 4
