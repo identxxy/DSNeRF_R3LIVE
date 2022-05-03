@@ -1,6 +1,6 @@
-expname = hkust_2view_ros
+expname = hkust_5view_ros
 basedir = ./logs
-datadir = ./data/hkust_2view_ros/
+datadir = ./data/hkust_5view_ros/
 dataset_type = llff
 
 factor = 4
@@ -18,11 +18,12 @@ netdepth = 4
 
 i_testset = 1000
 i_video = 10000
-N_iters = 10000
+N_iters = 30000
 
 train_scene = [0, 1]
 test_scene = [-1]
 no_ndc = True
-ros_depth = True
 depth_loss = True
+
+ros_depth = True
 depth_lambda = 1e-4
