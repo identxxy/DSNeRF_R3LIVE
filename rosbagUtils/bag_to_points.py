@@ -5,14 +5,6 @@ from turtle import pos
 import numpy as np
 import rosbag
 
-cam = np.array([
-    [863, 0 , 640],
-    [0, 863, 518],
-    [0, 0, 1]
-])
-
-cam_H = 1024
-cam_W = 1280
 
 def main():
     """Extract a folder of images from a rosbag.
@@ -43,14 +35,7 @@ def main():
             xyz_bytes = frame[0:12]
             buffer += xyz_bytes
         pts_xyz = np.frombuffer(buffer, np.float32).reshape(-1,3)
-        u, v, depth = -pts_xyz[:,1], -pts_xyz[:,2], pts_xyz[:,0]
-        pts_uvd = np.stack([u, v, depth]) # 3 x N
-        pts = cam @ pts_uvd # 3 x N
-        valid  = (pts[2,:] > 0 and 0 < pts[0,:] < cam_W and 0 < pts[1,:] < cam_H).reshape(-1)
-        pts = pts[:,valid]
-        pts = pts / pts[2,:]
-        uvd = np.stack([pts[0,:], pts[1,:], depth[valid]]).transpose() # N x 3
-        np.save(args.output_dir+ f"/{count:05d}", uvd)
+        np.save(args.output_dir+ f"/{count:05d}", pts_xyz)
         print(f"Save Points {count}")
 
         count += 1

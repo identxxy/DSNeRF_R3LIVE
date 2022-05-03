@@ -27,8 +27,8 @@ def load_ros_data(base_dir):
     points_files.sort()
     for f in points_files:
         pts = np.load(os.path.join(points_dir, f))
-        pts_depth = pts[:, 2]
-        bds_list.append((pts_depth.min(), pts_depth.max()))
+        pts_depth = pts[:, 0]
+        bds_list.append((pts_depth[pts_depth > 0].min(), pts_depth.max()))
 
     c2w_list = []
     poses_files = os.listdir(poses_dir)

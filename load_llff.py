@@ -443,6 +443,14 @@ def load_sensor_depth(basedir, factor=8, bd_factor=.75):
 
 def load_ros_depth(base_dir, factor=8):
 
+    cam_H = 1024
+    cam_W = 1280
+    cam = np.array([
+        [863, 0 , 640],
+        [0, 863, 518],
+        [0, 0, 1]
+    ])
+
     points_dir = os.path.join(Path(base_dir), 'ros/points')
     data_file = Path(base_dir) / 'ros_depth.npy'
     data_list = []
@@ -450,7 +458,22 @@ def load_ros_depth(base_dir, factor=8):
     filenames = os.listdir(points_dir)
     filenames.sort()
     for f in filenames:
-        pts_uvd = np.load(os.path.join(points_dir, f)) # N x 3
+        pts_xyz = np.load(os.path.join(points_dir, f)) # N x 3
+
+        u, v, depth = -pts_xyz[:,1], -pts_xyz[:,2], pts_xyz[:,0]
+        pts_uvd = np.stack([u, v, depth]) # 3 x N
+        pts = cam @ pts_uvd # 3 x N
+        # remove invalid depth
+        valid  = (pts[2,:] > 0.1 ).reshape(-1)
+        pts = pts[:,valid]
+        depth = depth[valid]
+        pts = pts / pts[2,:]
+        # remove invalid depth
+        valid = (0 < pts[0,:]) & (pts[0,:] < cam_W) & (0 < pts[1,:]) & (pts[1,:] < cam_H)
+        pts = pts[:,valid]
+        depth = depth[valid]
+        pts_uvd = np.stack([pts[0,:], pts[1,:], depth]).transpose() # N x 3
+
         pts_uv = pts_uvd[:, :2] / factor
         pts_depth = pts_uvd[:, 2]
         pts_uniform_w = np.ones_like(pts_depth)
