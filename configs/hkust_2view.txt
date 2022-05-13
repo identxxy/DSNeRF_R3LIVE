@@ -18,11 +18,11 @@ netdepth = 4
 
 i_testset = 1000
 i_video = 10000
-N_iters = 20000
+N_iters = 10000
 
-train_scene = [0, 1]
 test_scene = [-1]
 no_ndc = True
-colmap_depth = True
 depth_loss = True
+
+colmap_depth = True
 depth_lambda = 0.1

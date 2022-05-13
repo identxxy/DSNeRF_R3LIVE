@@ -3,7 +3,7 @@ basedir = ./logs
 datadir = ./data/hkust_5view_ros/
 dataset_type = llff
 
-factor = 4
+factor = 2
 
 N_rand = 1024
 N_samples = 64
@@ -17,10 +17,9 @@ netchunk = 16384
 netdepth = 4
 
 i_testset = 1000
-i_video = 10000
-N_iters = 30000
+i_video = 80000
+N_iters = 80000
 
-train_scene = [0, 1]
 test_scene = [-1]
 no_ndc = True
 depth_loss = True
